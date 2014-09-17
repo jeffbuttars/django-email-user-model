@@ -8,24 +8,22 @@ PYMOD := django_email_user_model
 SERVER_IP = localhost:8000
 .PHONY: reset run rundbg clean
 
-RUNDJDBG := cd dj; export DJANGO_DEBUG=True; ./manage.py $(RUNSERVER) $(SERVER_IP)
-RUNDJ := cd dj; export DJANGO_DEBUG=''; ./manage.py collectstatic -l --noinput; ./manage.py $(RUNSERVER)
+RUNDJDBG := cd $(DP); export DJANGO_DEBUG=True; ./manage.py $(RUNSERVER) $(SERVER_IP)
+RUNDJ := cd $(DP); export DJANGO_DEBUG=''; ./manage.py collectstatic -l --noinput; ./manage.py $(RUNSERVER)
 
+.PHONY: $(DP)
 $(DP):
-	if [ -d $(DP) ]; then\
-		cp -fr settings.py $(DP)/$(DP)/;\
-		exit 0;\
+	if [ ! -d $(DP) ]; then\
+		django-admin startproject $(DP);\
 	fi;\
-	django-admin startproject $(DP);\
 	cp -fr settings.py $(DP)/$(DP)/;\
-	cd $(DP)/$(DP);\
+	cd $(DP);\
 	./manage.py syncdb;\
 	./manage.py migrate;
 
 # Re-install $(PYPKG)
 reset:
-	-$(VENV); \
-	yes y | pip uninstall --exists-action=w $(PYPKG)
+	-$(VENV); yes y | pip uninstall --exists-action=w $(PYPKG)
 	pip install --exists-action=w --pre --no-deps ../src/
 
 resetpkg:
@@ -49,8 +47,8 @@ runpkgdbg: $(DP) resetpkg
 	$(RUNDJDBG)
 
 clean:
-	find . -iname '*.pyc' | xargs rm -fv
-	find . -name '__pycache__' | xargs rm -fvr
+	@find $(DP) -iname '*.pyc' | xargs rm -fv
+	@find $(DP) -name '__pycache__' | xargs rm -fvr
 
 realclean: clean
 	rm -fr $(DP)

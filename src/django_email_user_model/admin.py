@@ -1,7 +1,9 @@
-class SignUpAdmin(admin.ModelAdmin):
-    pass
+from django.contrib import admin
+from django.contrib.auth import get_user_model
+from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 
-admin.site.register(SignUp, SignUpAdmin)
+from models import EmailUserModel
 
 # We need to override the base User creation and change forms
 # because they are hard coded to use the User model, we just
