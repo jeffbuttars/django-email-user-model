@@ -9,6 +9,8 @@ authentication instead of a username.
 
 ## Config
 
+**Only install the `EmailUserModel` on a fresh project.**
+
 Add `django_email_user_model` to your `INSTALLED_APPS` list.
 
 Example:
@@ -39,3 +41,5 @@ AUTHENTICATION_BACKENDS = (
     ('django_email_user_model.backends.EmailAuthBackend'),
 )
 ```
+
+The proceed to finish getting your project started.
