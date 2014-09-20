@@ -33,17 +33,17 @@ resetpkg:
 	pip install --exists-action=w --pre --no-deps ../src/dist/$(PYMOD)-$$dv.tar.gz
 
 # run in production mode
-run: $(DP) reset
+run: reset $(DP)
 	$(RUNDJ)
 
-runpkg: $(DP) resetpkg
+runpkg: resetpkg $(DP)
 	$(RUNDJ)
 
 # run in debug mode
-rundbg: $(DP) reset
+rundbg:  reset $(DP)
 	$(RUNDJDBG)
 
-runpkgdbg: $(DP) resetpkg
+runpkgdbg: resetpkg $(DP)
 	$(RUNDJDBG)
 
 clean:
