@@ -13,7 +13,7 @@ from .models import EmailUserModel
 class EmailUserCreationForm(UserCreationForm):
     class Meta:
         model = get_user_model()
-        fields = ("username",)
+        fields = UserCreationForm.Meta.fields
 
     def clean_username(self):
         # Since User.username is unique, this check is redundant,
@@ -30,6 +30,7 @@ class EmailUserChangeForm(UserChangeForm):
     """Docstring for EmailUserChangeForm """
     class Meta:
         model = get_user_model()
+        fields = UserChangeForm.Meta.fields
 
 
 # Add the forms to our Admin class

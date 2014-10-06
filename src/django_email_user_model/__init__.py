@@ -4,5 +4,5 @@
 # Use the pep-0440 as a versioning guidline
 # There are always four parts, although trailing parts 'may' be empty.
 # Idealy the first 3 parts will always have a value
-__version__ = "0.1.1"
-__version_info__ = ('0', '1', '1')
+__version__ = "0.1.2"
+__version_info__ = ('0', '1', '2')
