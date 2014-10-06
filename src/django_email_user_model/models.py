@@ -43,14 +43,6 @@ class EmailUserManager(BaseUserManager):
 class EmailUserModel(AbstractBaseUser, PermissionsMixin):
     """Docstring for EmailUserModel """
 
-    date_of_birth = models.DateField(
-        help_text=(""),
-    )
-
-    date_of_birth = models.DateField(
-        help_text=(""),
-    )
-
     username = models.CharField(
         _('username'), max_length=30, unique=True,
         blank=True,
@@ -80,7 +72,7 @@ class EmailUserModel(AbstractBaseUser, PermissionsMixin):
         verbose_name_plural = _('users')
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username', 'date_of_birth']
+    REQUIRED_FIELDS = []
 
     def get_absolute_url(self):
         return "/users/%s/" % urlquote(self.username)
