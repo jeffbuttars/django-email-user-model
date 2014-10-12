@@ -13,14 +13,19 @@ from django.contrib.auth.models import AbstractUser, AbstractBaseUser, \
 
 class EmailUserManager(BaseUserManager):
 
-    def create_user(self, username, email=None, password=None, **extra_fields):
+    def create_user(self, email, password, **extra_fields):
         """
         Creates and saves a User with the given username, email and password.
         email is required, username is not.
         """
-        now = timezone.now()
         if not email:
             raise ValueError('The given email must be set')
+
+        username = extra_fields.pop('username', None)
+        if not username:
+            username = email.split('@', 1)[0]
+
+        now = timezone.now()
         email = EmailUserManager.normalize_email(email)
         user = self.model(username=username, email=email,
                           is_staff=False, is_active=True, is_superuser=False,
@@ -30,8 +35,9 @@ class EmailUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, username, email, password, **extra_fields):
-        u = self.create_user(username, email, password, **extra_fields)
+    def create_superuser(self, email, password, **extra_fields):
+
+        u = self.create_user(email, password, **extra_fields)
         u.is_staff = True
         u.is_active = True
         u.is_superuser = True
@@ -44,10 +50,10 @@ class EmailUserModel(AbstractBaseUser, PermissionsMixin):
     """Docstring for EmailUserModel """
 
     username = models.CharField(
-        _('username'), max_length=30, unique=True,
+        _('username'), max_length=128, unique=True,
         blank=True,
-        help_text=_('Required. 30 characters or fewer. Letters, numbers and '
-                    '@/./+/-/_ characters'),
+        help_text=_('Required. Email address. Letters, numbers and @/./+/-/_ characters'
+                   '. Max length is 128.'),
         validators=[
             validators.RegexValidator(
                 re.compile('^[\w.@+-]+$'), _('Enter a valid username.'), 'invalid')
@@ -72,7 +78,7 @@ class EmailUserModel(AbstractBaseUser, PermissionsMixin):
         verbose_name_plural = _('users')
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['username']
 
     def get_absolute_url(self):
         return "/users/%s/" % urlquote(self.username)
