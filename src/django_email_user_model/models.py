@@ -7,7 +7,7 @@ from django.core.signing import Signer
 from django.utils import timezone
 from django.utils.http import urlquote
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.auth.models import AbstractUser, AbstractBaseUser, \
+from django.contrib.auth.models import AbstractBaseUser, \
     PermissionsMixin, BaseUserManager
 
 
@@ -49,18 +49,23 @@ class EmailUserManager(BaseUserManager):
 class EmailUserModel(AbstractBaseUser, PermissionsMixin):
     """Docstring for EmailUserModel """
 
-    username = models.CharField(
-        _('username'), max_length=128, unique=True,
-        blank=True,
-        help_text=_('Required. Email address. Letters, numbers and @/./+/-/_ characters'
-                   '. Max length is 128.'),
+    username = models.CharField(_('username'), max_length=30, unique=True,
+        help_text=_('30 characters or fewer. Letters, digits and '
+                    '@/./+/-/_ only.'),
         validators=[
-            validators.RegexValidator(
-                re.compile('^[\w.@+-]+$'), _('Enter a valid username.'), 'invalid')
-        ])
+            validators.RegexValidator(r'^[\w.@+-]+$',
+                                      _('Enter a valid username. '
+                                        'This value may contain only letters, numbers '
+                                        'and @/./+/-/_ characters.'), 'invalid'),
+        ],
+        error_messages={
+            'unique': _("A user with that username already exists."),
+        })
     first_name = models.CharField(_('first name'), max_length=30, blank=True)
     last_name = models.CharField(_('last name'), max_length=30, blank=True)
+
     email = models.EmailField(_('email address'), blank=False, unique=True)
+
     is_staff = models.BooleanField(
         _('staff status'), default=False,
         help_text=_('Designates whether the user can log into this admin '
@@ -78,10 +83,10 @@ class EmailUserModel(AbstractBaseUser, PermissionsMixin):
         verbose_name_plural = _('users')
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
+    # REQUIRED_FIELDS = ['username']
 
     def get_absolute_url(self):
-        return "/users/%s/" % urlquote(self.username)
+        return "/users/%s/" % urlquote(self.email)
 
     def get_full_name(self):
         """
@@ -101,10 +106,13 @@ class EmailUserModel(AbstractBaseUser, PermissionsMixin):
         send_mail(subject, message, from_email, [self.email])
 
     def __unicode__(self):
-        """todo: Docstring for __unicode__
-        :return:
-        :rtype:
-        """
-        return self.get_full_name()
-    #__unicode__()
-#EmailUserModel
+        return self.email
+
+    def __str__(self):
+        return self.email
+
+
+class EmailUserProfile(models.Model):
+    user = models.OneToOneField(EmailUserModel,
+                                help_text=("Additional User Profile Information"),
+                                )
