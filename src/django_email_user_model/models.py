@@ -1,13 +1,13 @@
 import re
+import uuid
 
 from django.db import models
 from django.core.mail import send_mail
 from django.core import validators
-from django.core.signing import Signer
 from django.utils import timezone
 from django.utils.http import urlquote
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.auth.models import AbstractUser, AbstractBaseUser, \
+from django.contrib.auth.models import AbstractBaseUser, \
     PermissionsMixin, BaseUserManager
 
 
@@ -43,17 +43,18 @@ class EmailUserManager(BaseUserManager):
         u.is_superuser = True
         u.save(using=self._db)
         return u
-#EmailUserManager
 
 
 class EmailUserModel(AbstractBaseUser, PermissionsMixin):
     """Docstring for EmailUserModel """
 
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
     username = models.CharField(
         _('username'), max_length=128, unique=True,
         blank=True,
         help_text=_('Required. Email address. Letters, numbers and @/./+/-/_ characters'
-                   '. Max length is 128.'),
+                    '. Max length is 128.'),
         validators=[
             validators.RegexValidator(
                 re.compile('^[\w.@+-]+$'), _('Enter a valid username.'), 'invalid')
@@ -106,5 +107,3 @@ class EmailUserModel(AbstractBaseUser, PermissionsMixin):
         :rtype:
         """
         return self.get_full_name()
-    #__unicode__()
-#EmailUserModel
