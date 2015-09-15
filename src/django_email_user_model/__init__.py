@@ -6,3 +6,5 @@
 # Idealy the first 3 parts will always have a value
 __version__ = "0.1.7"
 __version_info__ = ('0', '1', '7')
+
+default_app_config = 'django_email_user_model.apps.UserAppConfig'
