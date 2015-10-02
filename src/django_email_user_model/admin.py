@@ -26,6 +26,7 @@ class EmailUserCreationForm(UserCreationForm):
             self._meta.model._default_manager.get(username=username)
         except self._meta.model.DoesNotExist:
             return username
+
         raise forms.ValidationError(self.error_messages['duplicate_username'])
 
     def clean_email(self):

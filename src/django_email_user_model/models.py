@@ -1,9 +1,9 @@
 import re
+import uuid
 
 from django.db import models
 from django.core.mail import send_mail
 from django.core import validators
-from django.core.signing import Signer
 from django.utils import timezone
 from django.utils.http import urlquote
 from django.utils.translation import ugettext_lazy as _
@@ -43,15 +43,18 @@ class EmailUserManager(BaseUserManager):
         u.is_superuser = True
         u.save(using=self._db)
         return u
-#EmailUserManager
 
 
 class EmailUserModel(AbstractBaseUser, PermissionsMixin):
     """Docstring for EmailUserModel """
 
-    username = models.CharField(_('username'), max_length=30, unique=True,
-        help_text=_('30 characters or fewer. Letters, digits and '
-                    '@/./+/-/_ only.'),
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    username = models.CharField(
+        _('username'), max_length=128, unique=True,
+        blank=True,
+        help_text=_('Required. Email address. Letters, numbers and @/./+/-/_ characters'
+                    '. Max length is 128.'),
         validators=[
             validators.RegexValidator(r'^[\w.@+-]+$',
                                       _('Enter a valid username. '
@@ -106,7 +109,13 @@ class EmailUserModel(AbstractBaseUser, PermissionsMixin):
         send_mail(subject, message, from_email, [self.email])
 
     def __unicode__(self):
-        return self.email
+        return self.get_full_name()
 
     def __str__(self):
-        return self.email
+        return self.get_full_name()
+
+
+class EmailUserProfile(models.Model):
+    user = models.OneToOneField(EmailUserModel,
+                                help_text=("Additional User Profile Information"),
+                                )
