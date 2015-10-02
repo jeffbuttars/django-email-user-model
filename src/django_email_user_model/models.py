@@ -113,9 +113,3 @@ class EmailUserModel(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.get_full_name()
-
-
-class EmailUserProfile(models.Model):
-    user = models.OneToOneField(EmailUserModel,
-                                help_text=("Additional User Profile Information"),
-                                )
