@@ -86,7 +86,6 @@ class EmailUserModel(AbstractBaseUser, PermissionsMixin):
         verbose_name_plural = _('users')
 
     USERNAME_FIELD = 'email'
-    # REQUIRED_FIELDS = ['username']
 
     def get_absolute_url(self):
         return "/users/%s/" % urlquote(self.email)
@@ -114,8 +113,4 @@ class EmailUserModel(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.get_full_name()
 
-
-class EmailUserProfile(models.Model):
-    user = models.OneToOneField(EmailUserModel,
-                                help_text=("Additional User Profile Information"),
                                 )
