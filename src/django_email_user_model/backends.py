@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 class EmailAuthBackend(object):
     """Docstring for EmailAuthBackend """
 
-    def authenticate(self, username=None, password=None):
+    def authenticate(self, email=None, password=None, username=None):
         """todo: Docstring for authenticate
 
         :param username: arg description
@@ -18,7 +18,7 @@ class EmailAuthBackend(object):
         user_model = get_user_model()
 
         try:
-            user = user_model.objects.get(email=username)
+            user = user_model.objects.get(email=(email or username))
 
             if user.check_password(password):
                 return user
